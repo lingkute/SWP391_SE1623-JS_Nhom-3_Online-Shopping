@@ -16,10 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import entity.Category;
 
-/**
- *
- * @author BVLT
- */
+
 public class InsertProduct extends BasedRequiredAuthenticationController1 {
 
     /**

@@ -5,10 +5,7 @@
  */
 package entity;
 
-/**
- *
- * @author BVLT
- */
+
 public class Cart {
     private int cID;
     private int cuID;

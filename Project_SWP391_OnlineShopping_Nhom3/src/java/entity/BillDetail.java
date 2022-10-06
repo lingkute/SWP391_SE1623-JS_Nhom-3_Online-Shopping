@@ -5,10 +5,7 @@
  */
 package entity;
 
-/**
- *
- * @author Nam
- */
+
 public class BillDetail {
     private int bid;
     private String pid;

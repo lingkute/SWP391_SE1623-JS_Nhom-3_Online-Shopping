@@ -7,10 +7,6 @@ package entity;
 
 import java.util.Date;
 
-/**
- *
- * @author Nam
- */
 public class User {
     private int cid;
     private String fullName;
@@ -19,6 +15,18 @@ public class User {
     private String username;
     private String password;
     private boolean status;
+    private boolean male;
+    private String email;
+    private String role;
+    private boolean gender;
+
+    public boolean isGender() {
+        return gender;
+    }
+
+    public void setGender(boolean gender) {
+        this.gender = gender;
+    }
 
     public User() {
     }
@@ -31,6 +39,17 @@ public class User {
         this.username = username;
         this.password = password;
         this.status = status;
+    }
+    public User(int cid, String fullName, String address, String phone, String username, String password, String email, boolean status, boolean gender) {
+        this.cid = cid;
+        this.fullName = fullName;
+        this.address = address;
+        this.phone = phone;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.status = status;
+        this.gender = gender;
     }
 
     public int getCid() {
@@ -88,10 +107,38 @@ public class User {
     public void setStatus(boolean status) {
         this.status = status;
     }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public boolean isMale() {
+        return male;
+    }
+
+    public void setMale(boolean male) {
+        this.male = male;
+    }
+
+    public String getGender() {
+        return isMale() ? "Male" : "Female";
+    }
     
-    
-    
-    
+    public String getStringStatus() {
+        return isStatus() ? "Enable" : "Disable";
+    }
 }
 
    

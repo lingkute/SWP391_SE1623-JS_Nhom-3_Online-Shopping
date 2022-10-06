@@ -5,10 +5,7 @@
  */
 package entity;
 
-/**
- *
- * @author Nam
- */
+
 public class Quantity {
     private int boughtQuantity;
     private int productQuantity;

@@ -16,10 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import entity.Review;
 import entity.User;
 
-/**
- *
- * @author BVLT
- */
+
 public class ProductDetail extends HttpServlet {
 
     /**

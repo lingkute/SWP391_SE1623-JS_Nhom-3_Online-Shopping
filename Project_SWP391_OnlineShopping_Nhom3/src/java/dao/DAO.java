@@ -5,6 +5,7 @@
  */
 package dao;
 
+import entity.Bill;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -16,13 +17,10 @@ import entity.Cart;
 import entity.Category;
 import entity.CheckOut;
 import entity.Product;
+import entity.Provider;
 import entity.Review;
 import entity.User;
 
-/**
- *
- * @author BVLT
- */
 public class DAO extends DBContext {
 
     private Connection con;
@@ -38,7 +36,7 @@ public class DAO extends DBContext {
             con = (new DBContext().connection);
             System.out.println("Success!");
             state = con.createStatement(rs.TYPE_SCROLL_SENSITIVE, rs.CONCUR_UPDATABLE);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println("Error connection: " + e.getMessage());
         }
     }
@@ -57,9 +55,8 @@ public class DAO extends DBContext {
                 u.setUsername(rs.getString("username"));
                 u.setPassword(rs.getString("password"));
                 u.setStatus(rs.getBoolean("status"));
-
-                ul.add(new User(u.getCid(), u.getFullName(), u.getAddress(),
-                        u.getPhone(), u.getUsername(), u.getPassword(), u.isStatus()));
+                u.setEmail(rs.getString("email"));
+                ul.add(u);
             }
         } catch (Exception e) {
             System.out.println("Error user: " + e.getMessage());
@@ -90,7 +87,7 @@ public class DAO extends DBContext {
             String strSelect = "select * from Category";
             rs = state.executeQuery(strSelect);
             while (rs.next()) {
-                c.setCateId(rs.getString(1));
+                c.setCateId(rs.getString(1));                
                 c.setCateName(rs.getString(2));
                 c.setImage(rs.getString(3));
                 c.setStatus(rs.getBoolean(4));
@@ -102,6 +99,25 @@ public class DAO extends DBContext {
         }
 
         return cl;
+    }
+    public ArrayList getProvider() {
+        ArrayList<Provider> list = new ArrayList<>();
+        try {
+            String strSelect = "select * from Provider";
+            rs = state.executeQuery(strSelect);
+            while (rs.next()) {
+                Provider p = new Provider();
+                p.setProvider_id(rs.getInt(1));
+                p.setProvider_name(rs.getString(2));
+                p.setProvider_email(rs.getString(3));
+                p.setProvider_address(rs.getString(4));
+                list.add(p);
+            }
+        } catch (Exception e) {
+            System.out.println("Error user: " + e.getMessage());
+        }
+
+        return list;
     }
 
     public ArrayList getAllProduct() {
@@ -123,7 +139,7 @@ public class DAO extends DBContext {
                 pl.add(new Product(p.getPid(), p.getPname(), p.getQuantity(), p.getPrice(),
                         p.getImage(), p.getDescription(), p.isStatus(), p.getCateId()));
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println("Error user: " + e.getMessage());
         }
 
@@ -242,7 +258,22 @@ public class DAO extends DBContext {
 
         return u;
     }
-
+    
+    public void updateUserInfo(User user) {
+        try {
+            rs = state.executeQuery("UPDATE [dbo].[User]\n"
+                    + "   SET [fullName] = '"+user.getFullName()+"'\n"
+                    + "      ,[address] = '"+user.getAddress()+"'\n"
+                    + "      ,[phone] = '"+user.getPhone()+"'\n"
+                    + "      ,[email] = '"+user.getEmail()+"'\n"
+                    + "      ,[gender] = "+(user.isGender() ? 1 : 0)+"\n"
+                    + " WHERE cid = "+user.getCid());
+            ;
+        } catch (Exception e) {
+            System.out.println("Error Customer " + e.getMessage());
+        }
+    }
+    
     public void insertContact(String cname, String cemail, String Subject, String Message) {
 
         //System.out.println(p_pid);
@@ -490,7 +521,133 @@ public class DAO extends DBContext {
         return uid != -1;
     }
 
-    public static void main(String[] args) {
-        System.out.println(new DAO().checkLogin("Huy", "123"));
+    public ArrayList<User> getListUser(String role, String status, String sort) {
+
+        ArrayList<User> list = new ArrayList<>();
+        try {
+            // query to get all User from DB
+            String query = "select * "
+                    + "from [User] u "
+                    + "left join [Role] r on u.roleid = r.roleid ";
+            // check cac truong hop 
+            // role va status blank
+            if (role.isEmpty() && !status.isEmpty()) {
+                query += "where status = " + "'" + status + "' ";
+            }
+            // role co gia tri va status = blank
+            if (!role.isEmpty() && status.isEmpty()) {
+                query += "where rolename = " + "'" + role + "' ";
+            }
+            // ca role va status deu co gia tri
+            if (!role.isEmpty() && !status.isEmpty()) {
+                query += "where rolename = " + "'" + role + "' and status = " + "'" + status + "' ";
+            }
+            //order by
+            query += "order by " + "'" + sort + "' ";
+
+            PreparedStatement ps = con.prepareStatement(query);
+            ResultSet rslt = ps.executeQuery();
+            while (rslt.next()) {
+                User u = new User();
+                u.setCid(rslt.getInt("cid"));
+                u.setFullName(rslt.getString("fullName"));
+                u.setUsername(rslt.getString("username"));
+                u.setMale(rslt.getBoolean("gender"));
+                u.setAddress(rslt.getString("address"));
+                u.setEmail(rslt.getString("email"));
+                u.setPhone(rslt.getString("phone"));
+                u.setRole(rslt.getString("rolename"));
+                u.setStatus(rslt.getBoolean("status"));
+                list.add(u);
+
+            }
+            return list;
+        } catch (SQLException e) {
+        }
+        return null;
+    }; 
+    
+    public ArrayList getBillList() {
+        Bill bill = new Bill();
+        ArrayList<Bill> bi = new ArrayList<>();
+        try {
+            String strSelect = "select * from Bill";
+            rs = state.executeQuery(strSelect);
+            while (rs.next()) {
+                bill.setBid(rs.getInt(1));
+                bill.setDateCreate(rs.getString(2));
+                bill.setTotal(rs.getDouble(3));
+                bill.setRecName(rs.getString(4));
+                bill.setRecAddress(rs.getString(5));
+                bill.setRecPhone(rs.getString(6));
+                bill.setStatus(rs.getInt(7));
+                bill.setCid(rs.getInt(8));
+                bi.add(new Bill(bill.getBid(), bill.getDateCreate(), bill.getTotal(), bill.getRecName(), bill.getRecAddress(), bill.getRecPhone(), bill.getStatus(), bill.getCid()));
+            }
+        } catch (Exception e) {
+            System.out.println("Error user: " + e.getMessage());
+        }
+
+        return bi;
+    }
+    
+     public Bill getBillById(int bid) {
+        Bill bill = new Bill();
+        try {
+            String strSelect = "select * from Bill WHERE bid = '" + bid + "'";
+            rs = state.executeQuery(strSelect);
+            while (rs.next()) {
+                bill.setBid(rs.getInt(1));
+                bill.setDateCreate(rs.getString(2));
+                bill.setTotal(rs.getDouble(3));
+                bill.setRecName(rs.getString(4));
+                bill.setRecAddress(rs.getString(5));
+                bill.setRecPhone(rs.getString(6));
+                bill.setStatus(rs.getInt(7));
+                bill.setCid(rs.getInt(8));
+            }
+        } catch (Exception e) {
+            System.out.println("Error user: " + e.getMessage());
+        }
+        return bill;
+    }
+
+    ; 
+    
+    public void addUser(User u) {
+        try {
+            String query = "Insert into [User] values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement ps = con.prepareStatement(query);
+            ps.setInt(1, getLastUserId() + 1);
+            ps.setInt(2, getRoleId(u.getRole()));
+        } catch (Exception e) {
+        }
+    }
+
+    public int getLastUserId() {
+        try {
+            String query = "select top 1 cid from [User] order by cid desc";
+            PreparedStatement ps = con.prepareStatement(query);
+            ResultSet rslt = ps.executeQuery();
+            if(rslt.next()) {
+                return rslt.getInt(1);
+            }
+        } catch (SQLException e) {
+        }
+        return 0;
+    }
+    
+    public int getRoleId(String rolename) {
+        try {
+            String query = "select roleid from [Role] where rolename = ?";
+            PreparedStatement ps = con.prepareStatement(query);
+            ps.setString(1, rolename);
+            ResultSet rslt = ps.executeQuery();
+            if(rslt.next()) {
+                return rslt.getInt(1);
+            }
+        } catch (SQLException e) {
+        }
+        return 1;
     }
 }

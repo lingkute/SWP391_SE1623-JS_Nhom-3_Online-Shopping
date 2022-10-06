@@ -17,10 +17,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import entity.CheckOut;
 
-/**
- *
- * @author BVLT
- */
+
 public class AdminConsole extends BasedRequiredAuthenticationController1 {
 
     /**

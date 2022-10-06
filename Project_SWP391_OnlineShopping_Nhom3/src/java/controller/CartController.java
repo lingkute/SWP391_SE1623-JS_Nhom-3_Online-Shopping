@@ -16,10 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import entity.Cart;
 import entity.User;
 
-/**
- *
- * @author BVLT
- */
+
 public class CartController extends HttpServlet {
 
     /**

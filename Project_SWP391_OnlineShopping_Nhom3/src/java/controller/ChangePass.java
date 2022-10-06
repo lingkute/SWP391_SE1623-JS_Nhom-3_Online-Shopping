@@ -15,10 +15,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import entity.User;
 
-/**
- *
- * @author BVLT
- */
 public class ChangePass extends HttpServlet {
 
     /**
